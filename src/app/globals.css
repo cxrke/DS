@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Mac-like window animations */
+@keyframes windowOpen {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes windowClose {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+
+.window-open {
+  animation: windowOpen 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.window-close {
+  animation: windowClose 0.18s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+
+/* Icon press animation - mimics Mac double-click bounce */
+@keyframes iconPress {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(0.85);
+  }
+  60% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.icon-press {
+  animation: iconPress 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Icon hover glow */
+@keyframes iconHoverPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 0 rgba(255,255,255,0));
+  }
+  50% {
+    filter: drop-shadow(0 2px 8px rgba(255,255,255,0.15));
+  }
+}
+
+/* Selection highlight */
+.icon-selected {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+}
+
+/* Panel slide in */
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.panel-open {
+  animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Backdrop blur support */
+@supports (backdrop-filter: blur(12px)) {
+  .glass {
+    backdrop-filter: blur(12px) saturate(180%);
+  }
+}
+
+/* Desktop shadow inset for depth */
+.desktop-frame {
+  box-shadow: 
+    inset 0 0 60px rgba(0,0,0,0.3),
+    0 25px 50px -12px rgba(0,0,0,0.5);
+}
+
+/* Smooth icon transitions */
+.desktop-icon {
+  transition: background-color 0.15s ease;
+  will-change: transform;
+}
+
+/* Cursor states for dragging */
+.cursor-grab {
+  cursor: grab;
+  cursor: -webkit-grab;
+}
+
+.cursor-grabbing {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
+}
+
+/* Touch handling */
+.touch-none {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Mobile landscape orientation */
+@media screen and (max-width: 768px) {
+  @media (orientation: landscape) {
+    html, body {
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
