@@ -239,16 +239,17 @@ function DesktopIconComponent({
   return (
     <div
       className={`
-        absolute desktop-icon flex flex-col items-center gap-1 p-2 select-none
-        rounded-lg touch-none
-        ${isDragging ? "cursor-grabbing z-50" : "cursor-grab"}
-        ${isSelected ? "bg-white/15" : "hover:bg-white/8"}
+        absolute desktop-icon flex flex-col items-center gap-2 p-3 select-none
+        rounded-xl touch-none
+        ${isDragging ? "cursor-grabbing z-50 scale-105" : "cursor-grab"}
+        ${isSelected ? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 shadow-lg shadow-purple-500/20" : "hover:bg-white/5"}
         ${isPressed ? "icon-press" : ""}
       `}
       style={{
         left: `${icon.x}%`,
         top: `${icon.y}%`,
         transform: 'translate(-50%, -50%)',
+        transition: isDragging ? 'none' : 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -256,22 +257,28 @@ function DesktopIconComponent({
       onDoubleClick={handleDoubleClickEvent}
       onContextMenu={handleContextMenu}
     >
-      <div className="pointer-events-none" style={{
-        filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.15))'
-      }}>
+      <div 
+        className="pointer-events-none transition-transform duration-200" 
+        style={{
+          filter: isDragging 
+            ? 'drop-shadow(0 8px 16px rgba(102, 126, 234, 0.4))' 
+            : 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
+        }}
+      >
         {icon.type === "spotify" && <SpotifyIcon />}
         {icon.type === "pinterest" && <PinterestIcon />}
         {icon.type === "image" && <ImageFileIcon preview={icon.imageData} />}
       </div>
       <span
         className={`
-          text-[11px] text-center leading-tight max-w-[80px] truncate pointer-events-none
-          ${isSelected ? "bg-[#0058d1] text-white px-1.5 py-0.5 rounded" : "text-white/95"}
+          text-[11px] text-center leading-tight max-w-[90px] truncate pointer-events-none
+          ${isSelected ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-1 rounded-md" : "text-white/95"}
         `}
         style={{
           fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif',
-          fontWeight: 400,
-          textShadow: isSelected ? 'none' : '0 1px 2px rgba(0,0,0,0.5)',
+          fontWeight: isSelected ? 500 : 400,
+          textShadow: isSelected ? '0 2px 4px rgba(0,0,0,0.3)' : '0 1px 3px rgba(0,0,0,0.6)',
+          letterSpacing: '0.01em',
         }}
       >
         {icon.label}
@@ -296,39 +303,58 @@ function ImagePreviewWindow({
 
   return (
     <div
-      className="absolute inset-0 flex items-center justify-center bg-black/50 z-50 backdrop-blur-sm"
+      className="absolute inset-0 flex items-center justify-center z-50"
+      style={{
+        background: 'radial-gradient(circle at center, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.85) 100%)',
+        backdropFilter: 'blur(16px)',
+      }}
       onClick={handleClose}
     >
       <div
         className={`
-          bg-[#232323] rounded-xl overflow-hidden max-w-[80%] max-h-[80%]
-          shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.1)]
+          glass-panel rounded-2xl overflow-hidden max-w-[85%] max-h-[85%]
           ${isClosing ? "window-close" : "window-open"}
         `}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Window title bar */}
-        <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-b from-[#3d3d3d] to-[#2d2d2d] border-b border-black/30">
+        <div 
+          className="flex items-center gap-3 px-5 py-4 border-b border-white/10"
+          style={{
+            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%)',
+          }}
+        >
           <div className="flex gap-2">
             <button
               onClick={handleClose}
-              className="w-3 h-3 rounded-full bg-[#ff5f57] hover:brightness-110 flex items-center justify-center group transition-all"
+              className="w-3 h-3 rounded-full bg-[#ff5f57] hover:brightness-110 flex items-center justify-center group transition-all duration-200 hover:scale-110"
+              style={{
+                boxShadow: '0 2px 8px rgba(255, 95, 87, 0.3)',
+              }}
             >
               <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 10 10" fill="none">
-                <path d="M1 1L9 9M9 1L1 9" stroke="rgba(0,0,0,0.5)" strokeWidth="2" strokeLinecap="round" />
+                <path d="M1 1L9 9M9 1L1 9" stroke="rgba(0,0,0,0.6)" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </button>
-            <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
-            <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+            <div className="w-3 h-3 rounded-full bg-[#febc2e]" style={{ boxShadow: '0 2px 8px rgba(254, 188, 46, 0.3)' }} />
+            <div className="w-3 h-3 rounded-full bg-[#28c840]" style={{ boxShadow: '0 2px 8px rgba(40, 200, 64, 0.3)' }} />
           </div>
-          <span className="text-[13px] text-white/70 ml-3 truncate font-medium">{preview.label}</span>
+          <span className="text-[13px] text-white/80 ml-2 truncate font-medium tracking-wide">{preview.label}</span>
         </div>
         {/* Image content */}
-        <div className="bg-[#1a1a1a]">
+        <div 
+          className="p-4"
+          style={{
+            background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
+          }}
+        >
           <img
             src={preview.imageData}
             alt={preview.label}
-            className="max-w-full max-h-[60vh] object-contain"
+            className="max-w-full max-h-[60vh] object-contain rounded-lg"
+            style={{
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+            }}
           />
         </div>
       </div>
@@ -380,36 +406,50 @@ function AddIconPanel({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          w-10 h-10 rounded-full glass bg-black/40 border border-white/20 
-          flex items-center justify-center text-white/80 hover:text-white
-          hover:bg-black/60 hover:border-white/30 hover:scale-105
-          active:scale-95 transition-all duration-150
-          ${isOpen ? "rotate-45" : ""}
+          group relative w-12 h-12 rounded-full glass overflow-hidden
+          flex items-center justify-center text-white
+          transition-all duration-300 ease-out
+          ${isOpen ? "rotate-45 scale-110" : "hover:scale-105"}
         `}
+        style={{
+          background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+        }}
       >
-        <svg className="w-5 h-5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <svg className="w-6 h-6 relative z-10 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
         </svg>
       </button>
 
       {isOpen && (
-        <div className="absolute top-12 right-0 bg-[#2d2d2d]/90 glass rounded-xl 
-                        border border-white/10 shadow-2xl overflow-hidden min-w-[240px] panel-open">
-          <div className="p-3 border-b border-white/10">
-            <span className="text-xs text-white/50 uppercase tracking-wider">Add to Desktop</span>
+        <div 
+          className="absolute top-14 right-0 glass-panel rounded-2xl overflow-hidden min-w-[280px] panel-open"
+          style={{
+            backdropFilter: 'blur(20px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          }}
+        >
+          <div className="p-4 border-b border-white/10">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-1 rounded-full bg-gradient-to-b from-purple-500 to-pink-500" />
+              <span className="text-sm text-white/90 font-medium tracking-wide">Add to Desktop</span>
+            </div>
           </div>
 
           {/* Wallpaper */}
           <button
             onClick={() => wallpaperInputRef.current?.click()}
-            className="w-full px-4 py-3 flex items-center gap-3 hover:bg-white/10 transition-colors"
+            className="group w-full px-4 py-3.5 flex items-center gap-3 hover:bg-white/5 transition-all duration-300 relative overflow-hidden"
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <span className="text-sm text-white">Change Wallpaper</span>
+            <span className="relative text-sm text-white/90 font-medium group-hover:text-white transition-colors duration-300">Change Wallpaper</span>
           </button>
           <input
             ref={wallpaperInputRef}
@@ -422,18 +462,23 @@ function AddIconPanel({
           <div className="h-px bg-white/10" />
 
           {/* Spotify */}
-          <div className="px-4 py-3">
-            <div className="flex items-center gap-3 mb-2">
-              <SpotifyIcon />
-              <span className="text-sm text-white">Spotify</span>
+          <div className="px-4 py-4">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="scale-75 transform">
+                <SpotifyIcon />
+              </div>
+              <span className="text-sm text-white/90 font-medium">Spotify</span>
             </div>
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="open.spotify.com/user/..."
+                placeholder="spotify.com/..."
                 value={spotifyUrl}
                 onChange={(e) => setSpotifyUrl(e.target.value)}
-                className="flex-1 px-2 py-1 text-xs bg-black/30 border border-white/10 rounded text-white placeholder:text-white/30"
+                className="flex-1 px-3 py-2 text-xs bg-black/40 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:border-[#1DB954]/50 focus:bg-black/50 transition-all duration-200"
+                style={{
+                  backdropFilter: 'blur(10px)',
+                }}
               />
               <button
                 onClick={() => {
@@ -442,7 +487,11 @@ function AddIconPanel({
                     setSpotifyUrl("");
                   }
                 }}
-                className="px-2 py-1 text-xs bg-[#1DB954] rounded text-white hover:bg-[#1DB954]/80"
+                className="px-4 py-2 text-xs font-medium rounded-lg text-white transition-all duration-300 hover:scale-105 active:scale-95"
+                style={{
+                  background: 'linear-gradient(135deg, #1ed760 0%, #1db954 100%)',
+                  boxShadow: '0 4px 12px rgba(30, 215, 96, 0.3)',
+                }}
               >
                 Add
               </button>
@@ -452,18 +501,23 @@ function AddIconPanel({
           <div className="h-px bg-white/10" />
 
           {/* Pinterest */}
-          <div className="px-4 py-3">
-            <div className="flex items-center gap-3 mb-2">
-              <PinterestIcon />
-              <span className="text-sm text-white">Pinterest</span>
+          <div className="px-4 py-4">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="scale-75 transform">
+                <PinterestIcon />
+              </div>
+              <span className="text-sm text-white/90 font-medium">Pinterest</span>
             </div>
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="pinterest.com/username"
+                placeholder="pinterest.com/..."
                 value={pinterestUrl}
                 onChange={(e) => setPinterestUrl(e.target.value)}
-                className="flex-1 px-2 py-1 text-xs bg-black/30 border border-white/10 rounded text-white placeholder:text-white/30"
+                className="flex-1 px-3 py-2 text-xs bg-black/40 border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:border-[#E60023]/50 focus:bg-black/50 transition-all duration-200"
+                style={{
+                  backdropFilter: 'blur(10px)',
+                }}
               />
               <button
                 onClick={() => {
@@ -472,7 +526,11 @@ function AddIconPanel({
                     setPinterestUrl("");
                   }
                 }}
-                className="px-2 py-1 text-xs bg-[#E60023] rounded text-white hover:bg-[#E60023]/80"
+                className="px-4 py-2 text-xs font-medium rounded-lg text-white transition-all duration-300 hover:scale-105 active:scale-95"
+                style={{
+                  background: 'linear-gradient(135deg, #e60023 0%, #c9002b 100%)',
+                  boxShadow: '0 4px 12px rgba(230, 0, 35, 0.3)',
+                }}
               >
                 Add
               </button>
@@ -484,10 +542,13 @@ function AddIconPanel({
           {/* Image */}
           <button
             onClick={() => imageInputRef.current?.click()}
-            className="w-full px-4 py-3 flex items-center gap-3 hover:bg-white/10 transition-colors"
+            className="group w-full px-4 py-3.5 flex items-center gap-3 hover:bg-white/5 transition-all duration-300 relative overflow-hidden"
           >
-            <ImageFileIcon />
-            <span className="text-sm text-white">Add Image</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative scale-75">
+              <ImageFileIcon />
+            </div>
+            <span className="relative text-sm text-white/90 font-medium group-hover:text-white transition-colors duration-300">Add Image</span>
           </button>
           <input
             ref={imageInputRef}
@@ -497,8 +558,10 @@ function AddIconPanel({
             onChange={handleImageUpload}
           />
 
-          <div className="p-3 border-t border-white/10 bg-black/20">
-            <span className="text-[10px] text-white/40">Right-click icons to remove</span>
+          <div className="p-4 border-t border-white/10 bg-black/10">
+            <p className="text-[10px] text-white/40 text-center leading-relaxed">
+              Right-click icons to remove • Drag to reposition
+            </p>
           </div>
         </div>
       )}
@@ -613,24 +676,40 @@ function WallpaperCropModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      style={{
+        background: 'radial-gradient(circle at center, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.9) 100%)',
+        backdropFilter: 'blur(12px)',
+      }}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      <div className="bg-[#232323] rounded-xl overflow-hidden shadow-2xl max-w-4xl w-full window-open">
+      <div className="glass-panel rounded-2xl overflow-hidden max-w-5xl w-full window-open">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-b from-[#3d3d3d] to-[#2d2d2d] border-b border-black/30">
-          <h2 className="text-white font-medium">Position & Resize Wallpaper</h2>
-          <div className="flex gap-2">
+        <div 
+          className="flex items-center justify-between px-6 py-5 border-b border-white/10"
+          style={{
+            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-1 rounded-full bg-gradient-to-b from-purple-500 to-pink-500" />
+            <h2 className="text-white font-semibold text-lg tracking-wide">Position & Resize Wallpaper</h2>
+          </div>
+          <div className="flex gap-3">
             <button
               onClick={onCancel}
-              className="px-4 py-1.5 text-sm text-white/70 hover:text-white transition-colors"
+              className="px-5 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
-              className="px-4 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+              className="px-6 py-2 text-sm font-medium text-white rounded-lg transition-all duration-300 hover:scale-105 active:scale-95"
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+              }}
             >
               Apply
             </button>
@@ -640,15 +719,26 @@ function WallpaperCropModal({
         {/* Crop Area - 19.5:9 aspect ratio */}
         <div
           ref={containerRef}
-          className="relative bg-[#1a1a1a] overflow-hidden cursor-move"
-          style={{ aspectRatio: '19.5/9', maxWidth: '90vw', maxHeight: '60vh' }}
+          className="relative overflow-hidden cursor-move"
+          style={{ 
+            aspectRatio: '19.5/9', 
+            maxWidth: '90vw', 
+            maxHeight: '60vh',
+            background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)',
+          }}
           onMouseMove={handleMouseMove}
           onWheel={handleWheel}
           onMouseDown={handleMouseDown}
         >
-          {/* 16:10 Frame Overlay */}
-          <div className="absolute inset-0 border-2 border-white/30 pointer-events-none" />
-          <div className="absolute inset-0 border-4 border-dashed border-white/10 pointer-events-none" />
+          {/* Frame Overlay */}
+          <div className="absolute inset-0 border-2 border-white/20 pointer-events-none" style={{ borderRadius: '1px' }} />
+          <div className="absolute inset-0 border-4 border-dashed border-white/5 pointer-events-none" />
+          
+          {/* Corner indicators */}
+          <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-purple-500/50 pointer-events-none" />
+          <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-purple-500/50 pointer-events-none" />
+          <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-purple-500/50 pointer-events-none" />
+          <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-purple-500/50 pointer-events-none" />
 
           {/* Image Container */}
           <div
@@ -672,15 +762,36 @@ function WallpaperCropModal({
           </div>
 
           {/* Instructions */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-lg text-white/70 text-xs text-center">
-            Drag to move • Scroll to zoom • Click Apply when ready
+          <div 
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 glass-panel px-6 py-3 rounded-xl text-white/80 text-sm text-center"
+            style={{
+              backdropFilter: 'blur(20px) saturate(180%)',
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+              </svg>
+              <span>Drag to move</span>
+              <span className="text-white/40">•</span>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <circle cx="12" cy="12" r="10" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v8" />
+              </svg>
+              <span>Scroll to zoom</span>
+            </div>
           </div>
         </div>
 
         {/* Controls */}
-        <div className="px-6 py-4 bg-[#2d2d2d] border-t border-black/30 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <label className="text-white/70 text-sm">Zoom:</label>
+        <div 
+          className="px-6 py-5 border-t border-white/10 flex items-center justify-between"
+          style={{
+            background: 'linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.5) 100%)',
+          }}
+        >
+          <div className="flex items-center gap-6">
+            <label className="text-white/70 text-sm font-medium">Zoom</label>
             <input
               type="range"
               min={minScale}
@@ -692,16 +803,21 @@ function WallpaperCropModal({
                 setScale(nextScale);
                 setPosition((current) => clampPosition(current.x, current.y, nextScale));
               }}
-              className="w-32"
+              className="w-40 accent-purple-500"
+              style={{
+                background: `linear-gradient(to right, rgb(102, 126, 234) 0%, rgb(102, 126, 234) ${((scale - minScale) / (maxScale - minScale)) * 100}%, rgba(255,255,255,0.1) ${((scale - minScale) / (maxScale - minScale)) * 100}%, rgba(255,255,255,0.1) 100%)`,
+                height: '4px',
+                borderRadius: '2px',
+              }}
             />
-            <span className="text-white/50 text-sm w-12">{Math.round(scale * 100)}%</span>
+            <span className="text-white/90 text-sm font-medium min-w-[4rem]">{Math.round(scale * 100)}%</span>
           </div>
           <button
             onClick={() => {
               setScale(1);
               setPosition({ x: 0, y: 0 });
             }}
-            className="px-3 py-1.5 text-xs text-white/70 hover:text-white transition-colors"
+            className="px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200"
           >
             Reset
           </button>
@@ -713,20 +829,37 @@ function WallpaperCropModal({
 
 function RotateHint() {
   return (
-    <div className="fixed inset-0 bg-gradient-to-b from-[#0a0a0a] to-[#1a1a1a] flex flex-col items-center justify-center gap-6 z-[200] portrait:flex landscape:hidden">
-      <div className="relative">
-        <div className="w-24 h-16 border-3 border-white/40 rounded-xl flex items-center justify-center">
-          <svg className="w-12 h-12 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+    <div 
+      className="fixed inset-0 flex flex-col items-center justify-center gap-8 z-[200] portrait:flex landscape:hidden"
+      style={{
+        background: 'radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0a 50%, #000000 100%)',
+      }}
+    >
+      <div className="relative float-animation">
+        <div 
+          className="w-32 h-20 rounded-2xl flex items-center justify-center relative overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%)',
+            border: '2px solid rgba(255, 255, 255, 0.2)',
+            boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+          }}
+        >
+          <svg className="w-16 h-16 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
           </svg>
-          <svg className="w-8 h-8 text-white/60 absolute animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <div className="absolute inset-0 shimmer opacity-30" />
+        </div>
+        <div className="absolute -right-2 -top-2 w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 animate-bounce" style={{
+          boxShadow: '0 8px 24px rgba(102, 126, 234, 0.5)',
+        }}>
+          <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
         </div>
       </div>
-      <div className="text-center px-8">
-        <p className="text-white/80 text-base font-semibold">Please rotate your device</p>
-        <p className="text-white/50 text-sm mt-2">This experience is designed for landscape mode</p>
+      <div className="text-center px-8 space-y-3">
+        <p className="text-white text-xl font-semibold tracking-wide">Rotate your device</p>
+        <p className="text-white/50 text-sm leading-relaxed max-w-xs">This experience is designed for landscape mode</p>
       </div>
     </div>
   );
@@ -855,17 +988,22 @@ export default function DemoPage() {
       <div className="min-h-screen w-full flex items-center justify-center relative z-10 overflow-hidden">
         {/* Desktop Canvas - 19.5:9 aspect ratio (phone landscape) */}
         <div
-          className={`relative w-full h-full overflow-hidden ${wallpaper ? "bg-transparent" : "bg-[#1c1c1e]"}`}
+          className={`relative w-full h-full overflow-hidden desktop-frame ${wallpaper ? "bg-transparent" : ""}`}
           style={{ 
             aspectRatio: '19.5/9',
             maxWidth: '100vw',
-            maxHeight: '100vh'
+            maxHeight: '100vh',
+            background: wallpaper ? 'transparent' : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
           }}
           onClick={handleDesktopClick}
         >
-          {/* Desktop background (only shows if no wallpaper) */}
+          {/* Ambient gradient overlay for depth */}
           {!wallpaper && (
-            <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]" />
+            <div className="absolute inset-0 opacity-60">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-pink-900/20" />
+              <div className="absolute top-0 left-0 w-full h-1/3 bg-gradient-to-b from-purple-500/5 to-transparent" />
+              <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-gradient-to-tl from-pink-500/5 to-transparent" />
+            </div>
           )}
 
           {/* Desktop Icons - Absolute Positioning */}
@@ -910,12 +1048,26 @@ export default function DemoPage() {
           {/* Empty state hint */}
           {icons.length === 0 && !wallpaper && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="text-center">
-                <div className="flex justify-center mb-4 opacity-30">
+              <div className="text-center float-animation">
+                <div 
+                  className="flex justify-center mb-6 opacity-40"
+                  style={{
+                    filter: 'drop-shadow(0 8px 16px rgba(102, 126, 234, 0.3))',
+                  }}
+                >
                   <FolderIcon />
                 </div>
-                <p className="text-white/40 text-sm font-medium">Your desktop is empty</p>
-                <p className="text-white/25 text-xs mt-1">Click + to add icons and wallpaper</p>
+                <div className="space-y-3">
+                  <p className="text-white/60 text-base font-medium tracking-wide">Your desktop is empty</p>
+                  <div className="flex items-center justify-center gap-2 text-white/40 text-sm">
+                    <span className="inline-block w-8 h-8 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                      </svg>
+                    </span>
+                    <span>Click the + to start</span>
+                  </div>
+                </div>
               </div>
             </div>
           )}
